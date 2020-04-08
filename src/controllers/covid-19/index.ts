@@ -48,7 +48,7 @@ export default class Covid19Controller extends Controller {
         const opMenu = Markup.inlineKeyboard([
             [Markup.callbackButton(opciones.register.title, opciones.register.actionName)],
             [Markup.callbackButton(HomeAction.title, HomeAction.actionName)],
-        ]).resize().extra();
+        ]).extra();
         await ctx.answerCbQuery();
         await ctx.editMessageText('Bienvenido al portal de COVID-19:\n' +
         '\n' +
@@ -58,7 +58,7 @@ export default class Covid19Controller extends Controller {
     private async registrarPaciente(ctx: SceneContextMessageUpdate) {
         const opMenu = Markup.inlineKeyboard([
             [Markup.callbackButton(BackAction.title, BackAction.actionName), Markup.callbackButton(HomeAction.title, HomeAction.actionName)],
-        ]).resize().extra();
+        ]).extra();
 
         // await ctx.replyWithVideo({
         //     filename: 'dacing-funeral-meme.mp4',

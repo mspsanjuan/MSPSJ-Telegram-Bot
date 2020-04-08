@@ -19,12 +19,10 @@ export default class App {
         this.bot = new Telegraf(BotToken);
         this.bot.use(Telegraf.log());
         this.bot.use(session());
-        // this.bot.on('callback_query', ctx => {
-        //     ctx.editMessageReplyMarkup();
-        // }); // Empty markup
 
         this.initializeSceneControllers(controllers);
 
+        this.bot.on('message', this.sendHelpMessage);
     }
 
     public async listen() {
@@ -54,7 +52,7 @@ export default class App {
      * y lista las opciones disponibles
      */
     static async sendStartMensaje(ctx: SceneContextMessageUpdate) {
-        const markup = Markup.inlineKeyboard(App.menuButtons).resize().extra();
+        const markup = Markup.inlineKeyboard(App.menuButtons).extra();
         const msg = 'Hola soy SALUCITO, el robot del Ministerio de Salud de San Juan\n' +
         'Dime en que te puedo ayudar?';
         // console.log(ctx.callbackQuery.data);
@@ -63,5 +61,16 @@ export default class App {
         } else {
             await ctx.reply(msg, markup);
         }
+    }
+
+    /**
+     * Envia un mensaje de ayuda cuando
+     * un usuario escribe algo que no es reconocido por el bot
+     * @param ctx 
+     */
+    private async sendHelpMessage(ctx: SceneContextMessageUpdate) {
+        const msg = 'No entendi lo que quisiste de decir. \n' +
+        'Recordá que podes ver mis opciones haciendo ingresando /start';
+        await ctx.reply(msg);
     }
 }
