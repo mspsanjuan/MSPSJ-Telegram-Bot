@@ -2,16 +2,16 @@ import Telegraf, {
     SceneContextMessageUpdate,
     Stage,
     Markup,
-    CallbackButton,
     UrlButton,
     session,
-    Extra
+    Extra,
+    Button
 } from 'telegraf';
 import Controller from './classes/controller';
 import { BotToken } from '../config.private';
 
 export default class App {
-    private static menuButtons: (CallbackButton | UrlButton)[][] = [];
+    private static menuButtons: (Button | UrlButton)[][] = [];
 
     private bot: Telegraf<SceneContextMessageUpdate>;
 
@@ -35,10 +35,9 @@ export default class App {
         this.bot.use(stage.middleware());
         for (const controller of controllers) {
             // Creamos la opcion en la ui
-            App.menuButtons.push([Markup.callbackButton(controller.title, controller.actionName)]);
-            // Creamos el comando para entrar
-            this.bot.action(controller.actionName, async (ctx) => {
-                await ctx.answerCbQuery();
+            App.menuButtons.push([Markup.button(controller.title)]);
+            // Escuchamos la palabra para entrar
+            this.bot.hears(controller.title, async (ctx) => {
                 await ctx.scene.enter(controller.scene.id);
             });
         }
@@ -50,9 +49,9 @@ export default class App {
      * Envia el msj de bienvenida al usuario
      * y lista las opciones disponibles
      */
-    static sendStartMensaje(ctx: SceneContextMessageUpdate) {
-        const markup = Markup.inlineKeyboard(App.menuButtons).extra();
-        ctx.reply('Hola soy Salucito, el robot del Ministerio de Salud de San Juan\n' +
+    static async sendStartMensaje(ctx: SceneContextMessageUpdate) {
+        const markup = Markup.keyboard(App.menuButtons).oneTime().resize().extra();
+        await ctx.reply('Hola soy Salucito, el robot del Ministerio de Salud de San Juan\n' +
         'Dime en que te puedo ayudar?', markup);
     }
 }

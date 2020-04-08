@@ -7,12 +7,12 @@ export default abstract class Controller {
     public get title() {
         return this._title;
     }
-    /**
-     * Accion para invocar la escena
-     */
-    public get actionName() {
-        return this._actionName;
-    }
+    // /**
+    //  * Accion para invocar la escena
+    //  */
+    // public get actionName() {
+    //     return this._actionName;
+    // }
     /**
      * Escena de Telegram
      */
@@ -21,7 +21,7 @@ export default abstract class Controller {
     }
 
     protected abstract _title: string;
-    protected abstract _actionName: string;
+    // protected abstract _actionName: string;
     protected abstract _scene: BaseScene<SceneContextMessageUpdate>;
 }
 
@@ -42,5 +42,5 @@ export default abstract class Controller {
 //     leave?: {
 //         after: Middleware<SceneContextMessageUpdate>[];
 //     };
-//     afterLeave?: 
+//     afterLeave?:
 // }
