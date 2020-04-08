@@ -4,20 +4,22 @@ import Telegraf, {
     Markup,
     UrlButton,
     session,
-    Extra,
-    Button
+    CallbackButton
 } from 'telegraf';
 import Controller from './classes/controller';
 import { BotToken } from '../config.private';
 
 export default class App {
-    private static menuButtons: (Button | UrlButton)[][] = [];
+    private static menuButtons: (CallbackButton | UrlButton)[][] = [];
 
     private bot: Telegraf<SceneContextMessageUpdate>;
 
     constructor(...controllers: Controller[]) {
         this.bot = new Telegraf(BotToken);
         this.bot.use(session());
+        // this.bot.on('callback_query', ctx => {
+        //     ctx.editMessageReplyMarkup();
+        // }); // Empty markup
 
         this.initializeSceneControllers(controllers);
 
@@ -31,13 +33,13 @@ export default class App {
 
     private initializeSceneControllers(controllers: Controller[]) {
         const stage = new Stage(controllers.map(x => x.scene), { ttl: 10 });
-        stage.command('quit', Stage.leave());
         this.bot.use(stage.middleware());
         for (const controller of controllers) {
             // Creamos la opcion en la ui
-            App.menuButtons.push([Markup.button(controller.title)]);
-            // Escuchamos la palabra para entrar
-            this.bot.hears(controller.title, async (ctx) => {
+            App.menuButtons.push([Markup.callbackButton(controller.title, controller.actionName)]);
+            // Esperamos la accion para entrar
+            this.bot.action(controller.actionName, async (ctx) => {
+                await ctx.answerCbQuery();
                 await ctx.scene.enter(controller.scene.id);
             });
         }
@@ -50,7 +52,7 @@ export default class App {
      * y lista las opciones disponibles
      */
     static async sendStartMensaje(ctx: SceneContextMessageUpdate) {
-        const markup = Markup.keyboard(App.menuButtons).oneTime().resize().extra();
+        const markup = Markup.inlineKeyboard(App.menuButtons).resize().extra();
         await ctx.reply('Hola soy Salucito, el robot del Ministerio de Salud de San Juan\n' +
         'Dime en que te puedo ayudar?', markup);
     }
