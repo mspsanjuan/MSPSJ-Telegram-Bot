@@ -8,6 +8,7 @@ import Telegraf, {
 } from 'telegraf';
 import Controller from './classes/controller';
 import { BotToken } from '../config.private';
+import { HomeAction } from './utils/actions';
 
 export default class App {
     private static menuButtons: (CallbackButton | UrlButton)[][] = [];
@@ -16,6 +17,7 @@ export default class App {
 
     constructor(...controllers: Controller[]) {
         this.bot = new Telegraf(BotToken);
+        this.bot.use(Telegraf.log());
         this.bot.use(session());
         // this.bot.on('callback_query', ctx => {
         //     ctx.editMessageReplyMarkup();
@@ -53,7 +55,13 @@ export default class App {
      */
     static async sendStartMensaje(ctx: SceneContextMessageUpdate) {
         const markup = Markup.inlineKeyboard(App.menuButtons).resize().extra();
-        await ctx.reply('Hola soy Salucito, el robot del Ministerio de Salud de San Juan\n' +
-        'Dime en que te puedo ayudar?', markup);
+        const msg = 'Hola soy SALUCITO, el robot del Ministerio de Salud de San Juan\n' +
+        'Dime en que te puedo ayudar?';
+        // console.log(ctx.callbackQuery.data);
+        if (ctx.callbackQuery && ctx.callbackQuery.data === HomeAction.actionName) {
+            await ctx.editMessageText(msg, markup);
+        } else {
+            await ctx.reply(msg, markup);
+        }
     }
 }

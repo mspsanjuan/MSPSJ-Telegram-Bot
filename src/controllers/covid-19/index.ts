@@ -3,7 +3,8 @@ import Telegraf, {
     SceneContextMessageUpdate,
     Markup,
     Stage,
-    Middleware
+    Middleware,
+    Extra
 } from 'telegraf';
 import { createReadStream } from 'fs';
 import Controller from '../../classes/controller';
@@ -34,7 +35,7 @@ export default class Covid19Controller extends Controller {
 
     private initialize() {
         this.scene.enter(this.sendEnterMessage);
-        this.scene.leave(this.sendLeaveMessage, App.sendStartMensaje);
+        this.scene.leave(App.sendStartMensaje);
 
         this.scene.action(opciones.register.actionName, this.registrarPaciente);
         this.scene.action(BackAction.actionName, this.sendEnterMessage);
@@ -54,21 +55,16 @@ export default class Covid19Controller extends Controller {
         'Seleccione alguna de las siguientes opciones', opMenu);
     }
 
-    private async sendLeaveMessage(ctx: SceneContextMessageUpdate, next) {
-        await ctx.reply('Saliendo del portal de COVID-19...');
-        next();
-    }
-
     private async registrarPaciente(ctx: SceneContextMessageUpdate) {
         const opMenu = Markup.inlineKeyboard([
             [Markup.callbackButton(BackAction.title, BackAction.actionName), Markup.callbackButton(HomeAction.title, HomeAction.actionName)],
         ]).resize().extra();
 
-        await ctx.reply('¡Usted fué registrado exitosamente!');
-        await ctx.replyWithVideo({
-            filename: 'dacing-funeral-meme.mp4',
-            source: createReadStream(join('', 'src/assets/videos/dacing-funeral-meme.mp4')),
-        }, opMenu);
+        // await ctx.replyWithVideo({
+        //     filename: 'dacing-funeral-meme.mp4',
+        //     source: createReadStream(join('', 'src/assets/videos/dacing-funeral-meme.mp4')),
+        // });
+        await ctx.editMessageText('¡Usted fué registrado exitosamente!', opMenu);
         // await ctx.reply('Opciones: ', opMenu);
     }
 
